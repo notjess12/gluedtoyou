@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You ❤️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffebee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            color: #d32f2f;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+        
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px 15px;
+            position: relative;
+        }
+        
+        .heart {
+            font-size: 15vw;
+            max-font-size: 60px;
+            min-font-size: 40px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin: 10px 0 20px;
+            z-index: 10;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .heart:hover, .heart:active {
+            transform: scale(1.2);
+        }
+        
+        .letter {
+            background-color: white;
+            padding: 6vw;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: none;
+            text-align: left;
+            line-height: 1.6;
+            position: relative;
+            z-index: 5;
+            font-size: 4vw;
+        }
+        
+        @media (min-width: 600px) {
+            .letter {
+                padding: 30px;
+                font-size: 16px;
+            }
+            .heart {
+                font-size: 60px;
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .signature {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        
+        .floating-emoji {
+            position: absolute;
+            font-size: 6vw;
+            max-font-size: 24px;
+            min-font-size: 16px;
+            pointer-events: none;
+            animation: floatAround 15s linear infinite;
+            opacity: 0;
+            z-index: 1;
+        }
+        
+        @keyframes floatAround {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(var(--random-x) * 80px), calc(var(--random-y) * 80px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="heart floating" onclick="revealLetter()">💗</div>
+        
+        <div class="letter" id="loveLetter">
+            <p>Sherry,</p>
+            <p>I love you 💗</p>
+            <p>I've never said "I love you" to anyone before, because I never felt what I feel for you.</p>
+            <p>I don't even know how or when I started falling in love with you - it just happened.</p>
+            <p>Every time you said "I love you" to me, even when I tried to hold back, my heart always replied.</p>
+            <p>I hope you never leave my side and remain the only man I've ever said "I love you" to.</p>
+            <div class="signature">jess</div>
+        </div>
+    </div>
+    
+    <script>
+        const emojis = ['❤️', '💕', '💘', '💖', '💓', '💝', '💞', '🥰', '😍', '💋', '🌸', '✨'];
+        let emojiInterval;
+        
+        function createFloatingEmoji() {
+            const emoji = document.createElement('div');
+            emoji.className = 'floating-emoji';
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            // Set random animation properties
+            emoji.style.setProperty('--random-x', Math.random() * 2 - 1);
+            emoji.style.setProperty('--random-y', Math.random() * 2 - 1);
+            emoji.style.left = `${Math.random() * 80 + 10}%`;
+            emoji.style.top = `${Math.random() * 80 + 10}%`;
+            emoji.style.animationDuration = `${10 + Math.random() * 20}s`;
+            emoji.style.animationDelay = `${Math.random() * 5}s`;
+            
+            document.querySelector('.container').appendChild(emoji);
+            
+            // Remove emoji after animation completes
+            setTimeout(() => {
+                if (emoji.parentNode) {
+                    emoji.parentNode.removeChild(emoji);
+                }
+            }, 25000);
+        }
+        
+        function startEmojiRain() {
+            // Clear any existing interval
+            if (emojiInterval) clearInterval(emojiInterval);
+            
+            // Create initial emojis
+            for (let i = 0; i < 5; i++) {
+                createFloatingEmoji();
+            }
+            
+            // Create emojis periodically while letter is open
+            emojiInterval = setInterval(() => {
+                if (document.getElementById('loveLetter').style.display === 'block') {
+                    createFloatingEmoji();
+                } else {
+                    clearInterval(emojiInterval);
+                }
+            }, 800);
+        }
+        
+        function revealLetter() {
+            const letter = document.getElementById('loveLetter');
+            const heart = document.querySelector('.heart');
+            
+            if (letter.style.display === 'block') {
+                letter.style.display = 'none';
+                heart.classList.add('floating');
+                clearInterval(emojiInterval);
+            } else {
+                letter.style.display = 'block';
+                heart.classList.remove('floating');
+                startEmojiRain();
+            }
+        }
+        
+        // Handle mobile touch events better
+        document.querySelector('.heart').addEventListener('touchstart', function() {
+            this.style.transform = 'scale(1.2)';
+        });
+        
+        document.querySelector('.heart').addEventListener('touchend', function() {
+            this.style.transform = 'scale(1)';
+            revealLetter();
+        });
+    </script>
+</body>
+</html>
